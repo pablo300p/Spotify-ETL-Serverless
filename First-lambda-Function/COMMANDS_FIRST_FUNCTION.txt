@@ -1,0 +1,58 @@
+# https://docs.aws.amazon.com/lambda/latest/dg/python-image.html#python-image-instructions
+#CREATE EC2 MACHINE LINUX TO CREATE THE CONTAINER
+#CREATE DOCKER IMAGE CONTAINING THE FUNCTION
+sudo yum update -y
+sudo yum install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+newgrp docker
+--------------------------------------------------------------------------------
+#CREATE DIRECTORY
+mkdir docker-lambda1
+cd docker-lambda1
+--------------------------------------------------------------------------------
+#DOCKERFILE
+vi Dockerfile
+
+FROM public.ecr.aws/lambda/python:3.12
+
+# Copy requirements.txt
+COPY requirements.txt ${LAMBDA_TASK_ROOT}
+
+# Install the specified packages
+RUN pip install -r requirements.txt
+
+# Copy function code
+COPY app1.py ${LAMBDA_TASK_ROOT}
+
+# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
+CMD [ "app1.handler" ]
+
+
+
+#PASTE THE FUNCTION FROM LOCAL TO THE FILE
+vi app1.py:
+--------------------------------------------------------------------------------
+#PASTE THE REQUIREMENTS FROM LOCAL TO THE FILE
+vi requirements.txt
+-------------------------------------------------------------------------------
+
+#EXECUTE THE FILE TO CREATE THE DOCKER IMAGE
+docker build -t spotify1-extract .
+--------------------------------------------------------------------------------
+#CHECK THE DOCKER IMAGE WAS CREATED
+docker image ls
+--------------------------------------------------------------------------------
+#PACKAGES FOR requirments.txt
+spotipy
+boto3
+datetime
+
+#IMPORT INTO REGISTRY
+Check push command to push the image into the container registry. (Ensure the role in EC2 allow registry top access)
+
+#Import into lambda, ensure the roles allow to connect the services, check the timeout of the function
+
+
+
+

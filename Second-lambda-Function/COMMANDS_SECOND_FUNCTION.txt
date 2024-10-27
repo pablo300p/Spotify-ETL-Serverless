@@ -1,0 +1,73 @@
+# https://docs.aws.amazon.com/lambda/latest/dg/python-image.html#python-image-instructions
+#CREATE EC2 MACHINE LINUX TO CREATE THE CONTAINER
+#CREATE DOCKER IMAGE CONTAINING THE FUNCTION
+sudo yum update -y
+sudo yum install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+newgrp docker
+--------------------------------------------------------------------------------
+#CREATE DIRECTORY
+mkdir docker-lambda2
+cd docker-lambda2
+--------------------------------------------------------------------------------
+#DOCKERFILE
+vi Dockerfile
+
+FROM public.ecr.aws/lambda/python:3.12
+
+# Copy requirements.txt
+COPY requirements.txt ${LAMBDA_TASK_ROOT}
+
+# Install the specified packages
+RUN pip install -r requirements.txt
+
+# Copy function code
+COPY app2.py ${LAMBDA_TASK_ROOT}
+
+# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
+CMD [ "app2.handler" ]
+
+
+
+#PASTE THE FUNCTION FROM LOCAL TO THE FILE
+vi app2.py
+--------------------------------------------------------------------------------
+#PASTE THE REQUIREMENTS FROM LOCAL TO THE FILE
+vi requirements.txt
+-------------------------------------------------------------------------------
+
+#EXECUTE THE FILE TO CREATE THE DOCKER IMAGE
+docker build -t spotify2-save .
+--------------------------------------------------------------------------------
+#CHECK THE DOCKER IMAGE WAS CREATED
+docker image ls
+--------------------------------------------------------------------------------
+#PACKAGES FOR requirements.txt
+pandas
+boto3
+pyarrow
+sqlalchemy
+botocore
+
+---------------------------------------------------------------------------------
+#IMPORT INTO REGISTRY
+#Check push command to push the image into the container registry. (Ensure the role in EC2 allow registry top access)
+
+#Import into lambda, ensure the roles allow to connect the services, check the timeout of the function
+
+
+///////////////////////
+SQL Command to create table:
+
+CREATE TABLE Spotify (
+    Id TEXT PRIMARY KEY,
+    Artist VARCHAR(255),
+    Song_Name VARCHAR(255),
+    Plays INT,
+    Album VARCHAR(255),
+    Duration INT,
+    Release_Date DATE
+);
+
+
